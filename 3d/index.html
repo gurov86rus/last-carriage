@@ -29,14 +29,6 @@
         <p class="loading-hint">75 секунд. Одна пушка. Довези ядро до станции.</p>
       </div>
     </section>
-    <section id="rotate" hidden>
-      <div>
-        <p class="rotate-mark" aria-hidden="true"><i></i></p>
-        <h2>Поверни телефон</h2>
-        <p>Поперёк экрана видно оба борта вагона сразу.</p>
-        <button id="rotate-skip" type="button">Играть так</button>
-      </div>
-    </section>
   </main>
   <footer>
     <span>Браузерный тест <b>3D</b></span>
@@ -53,23 +45,10 @@
     const progressBar = document.getElementById('progress');
     const loadStatus = document.getElementById('load-status');
     const fullscreen = document.getElementById('fullscreen');
-    const rotate = document.getElementById('rotate');
-    // Палец вместо мыши меняет и подсказки, и то, стоит ли звать в полный экран.
+    // Палец вместо мыши меняет подсказки и то, стоит ли звать в полный экран.
     const coarse = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || navigator.maxTouchPoints > 0;
     document.body.classList.toggle('touch', coarse);
     if (coarse) fullscreen.textContent = 'Во весь экран ↗';
-    function checkOrientation() {
-      const portrait = window.innerHeight > window.innerWidth;
-      rotate.hidden = !(coarse && portrait) || document.body.classList.contains('rotate-skipped');
-    }
-    document.getElementById('rotate-skip').addEventListener('click', () => {
-      document.body.classList.add('rotate-skipped');
-      checkOrientation();
-      canvas.focus();
-    });
-    window.addEventListener('resize', checkOrientation);
-    window.addEventListener('orientationchange', checkOrientation);
-    checkOrientation();
     let instance = null;
     let failed = false;
     function showError(message) {
@@ -126,7 +105,6 @@
           if (!failed) loading.hidden = true;
           fullscreen.disabled = false;
           document.body.dataset.ready = 'true';
-          checkOrientation();
           canvas.focus();
         }).catch(showError);
       };
