@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#142a30">
+  <title>Последний вагон — 3D-прототип</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="player">
+    <canvas id="unity-canvas" width="1440" height="900" tabindex="0" aria-label="Последний вагон: трёхмерное игровое поле"></canvas>
+    <section id="loading" aria-labelledby="load-title">
+      <div class="loading-card">
+        <p class="eyebrow">MINTY PIXEL / ИСПЫТАТЕЛЬНЫЙ ПЕРЕГОН</p>
+        <div class="rail-mark" aria-hidden="true"><i></i><i></i><span>07</span></div>
+        <h1 id="load-title">Последний<br>вагон.</h1>
+        <p id="load-description">Готовим поезд к рейсу.</p>
+        <progress id="progress" max="100" value="0" aria-label="Загрузка игры"></progress>
+        <p id="load-status" role="status">Загрузка 3D-сцены · 0%</p>
+        <button id="retry" hidden>Попробовать снова</button>
+        <p class="loading-hint">75 секунд. Одна пушка. Довези ядро до станции.</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <span>Браузерный тест <b>3D</b></span>
+    <span class="desktop-tip">Мышь — прицел · ЛКМ — огонь · C — камера · Esc — пауза</span>
+    <nav aria-label="Управление окном">
+      <button id="fullscreen" disabled>На весь экран ↗</button>
+    </nav>
+  </footer>
+  <noscript>Для запуска игры включите JavaScript в браузере.</noscript>
+  <script>
+    const canvas = document.getElementById('unity-canvas');
+    const loading = document.getElementById('loading');
+    const progressBar = document.getElementById('progress');
+    const loadStatus = document.getElementById('load-status');
+    const fullscreen = document.getElementById('fullscreen');
+    let instance = null;
+    let failed = false;
+    function showError(message) {
+      failed = true;
+      loading.hidden = false;
+      document.getElementById('load-title').textContent = 'Не удалось запустить игру';
+      document.getElementById('load-description').textContent = 'Попробуй обновить страницу или открыть её в другом браузере.';
+      loadStatus.textContent = String(message).slice(0, 450);
+      progressBar.hidden = true;
+      document.getElementById('retry').hidden = false;
+    }
+    document.getElementById('retry').addEventListener('click', () => location.reload());
+    canvas.addEventListener('contextmenu', event => event.preventDefault());
+    canvas.addEventListener('pointerdown', () => canvas.focus());
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && instance) instance.SendMessage('Prototype controller', 'PauseForBrowser');
+    });
+    window.addEventListener('blur', () => {
+      if (instance) instance.SendMessage('Prototype controller', 'PauseForBrowser');
+    });
+    fullscreen.addEventListener('click', () => {
+      if (!instance) return;
+      instance.SetFullscreen(1);
+      canvas.focus();
+    });
+    const buildUrl = 'Build';
+    const config = {
+      dataUrl: buildUrl + '/WebGL.data.unityweb',
+      frameworkUrl: buildUrl + '/WebGL.framework.js.unityweb',
+      codeUrl: buildUrl + '/WebGL.wasm.unityweb',
+      streamingAssetsUrl: 'StreamingAssets',
+      companyName: 'Minty Pixel',
+      productName: 'Last Carriage 3D',
+      productVersion: '0.1.0',
+      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.5),
+      showBanner: (message, type) => {
+        if (type === 'error') showError(message);
+        else console.info(message);
+      }
+    };
+    if (location.protocol === 'file:') {
+      showError('Открой Play-Web.command в папке проекта: браузерной игре нужен локальный сервер.');
+    } else {
+      const script = document.createElement('script');
+      script.src = buildUrl + '/WebGL.loader.js';
+      script.onerror = () => showError('Файл загрузчика не найден. Проверь, что папка Build находится рядом с index.html.');
+      script.onload = () => {
+        createUnityInstance(canvas, config, value => {
+          const percent = Math.round(value * 100);
+          progressBar.value = percent;
+          if (!failed) loadStatus.textContent = percent < 90 ? `Загрузка 3D-сцены · ${percent}%` : 'Запускаем двигатель…';
+        }).then(game => {
+          instance = game;
+          if (!failed) loading.hidden = true;
+          fullscreen.disabled = false;
+          document.body.dataset.ready = 'true';
+          canvas.focus();
+        }).catch(showError);
+      };
+      document.body.appendChild(script);
+    }
+  </script>
+</body>
+</html>
