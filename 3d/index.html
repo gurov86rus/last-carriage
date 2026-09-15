@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#142a30">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Последний вагон — 3D-прототип</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
@@ -13,7 +15,11 @@
     <canvas id="unity-canvas" width="1440" height="900" tabindex="0" aria-label="Последний вагон: трёхмерное игровое поле"></canvas>
     <section id="loading" aria-labelledby="load-title">
       <div class="loading-card">
-        <p class="eyebrow">MINTY PIXEL / ИСПЫТАТЕЛЬНЫЙ ПЕРЕГОН</p>
+        <p class="brand">
+          <span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span>MINTY<span class="brand-light">PIXEL</span></span>
+        </p>
+        <p class="eyebrow">ИСПЫТАТЕЛЬНЫЙ ПЕРЕГОН</p>
         <div class="rail-mark" aria-hidden="true"><i></i><i></i><span>07</span></div>
         <h1 id="load-title">Последний<br>вагон.</h1>
         <p id="load-description">Готовим поезд к рейсу.</p>
@@ -23,10 +29,19 @@
         <p class="loading-hint">75 секунд. Одна пушка. Довези ядро до станции.</p>
       </div>
     </section>
+    <section id="rotate" hidden>
+      <div>
+        <p class="rotate-mark" aria-hidden="true"><i></i></p>
+        <h2>Поверни телефон</h2>
+        <p>Поперёк экрана видно оба борта вагона сразу.</p>
+        <button id="rotate-skip" type="button">Играть так</button>
+      </div>
+    </section>
   </main>
   <footer>
     <span>Браузерный тест <b>3D</b></span>
     <span class="desktop-tip">Мышь — прицел · ЛКМ — огонь · C — камера · Esc — пауза</span>
+    <span class="touch-tip">Во весь экран — так удобнее</span>
     <nav aria-label="Управление окном">
       <button id="fullscreen" disabled>На весь экран ↗</button>
     </nav>
@@ -38,6 +53,23 @@
     const progressBar = document.getElementById('progress');
     const loadStatus = document.getElementById('load-status');
     const fullscreen = document.getElementById('fullscreen');
+    const rotate = document.getElementById('rotate');
+    // Палец вместо мыши меняет и подсказки, и то, стоит ли звать в полный экран.
+    const coarse = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || navigator.maxTouchPoints > 0;
+    document.body.classList.toggle('touch', coarse);
+    if (coarse) fullscreen.textContent = 'Во весь экран ↗';
+    function checkOrientation() {
+      const portrait = window.innerHeight > window.innerWidth;
+      rotate.hidden = !(coarse && portrait) || document.body.classList.contains('rotate-skipped');
+    }
+    document.getElementById('rotate-skip').addEventListener('click', () => {
+      document.body.classList.add('rotate-skipped');
+      checkOrientation();
+      canvas.focus();
+    });
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+    checkOrientation();
     let instance = null;
     let failed = false;
     function showError(message) {
@@ -94,6 +126,7 @@
           if (!failed) loading.hidden = true;
           fullscreen.disabled = false;
           document.body.dataset.ready = 'true';
+          checkOrientation();
           canvas.focus();
         }).catch(showError);
       };

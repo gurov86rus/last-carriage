@@ -1,14 +1,34 @@
 :root { color-scheme: dark; font-family: Arial, Helvetica, sans-serif; color: #e7e6d4; background: #10232a; }
 * { box-sizing: border-box; }
-html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
+body { -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 body { display: flex; flex-direction: column; }
-#player { min-height: 0; flex: 1; position: relative; background: #142a30; }
+/* Вырез и «подбородок» телефона: холст живёт внутри безопасной зоны, поэтому
+   ни прицел, ни кнопки не уезжают под чёлку. */
+#player { min-height: 0; flex: 1; position: relative; background: #142a30;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
 canvas { width: 100%; height: 100%; display: block; outline: none; touch-action: none; }
 canvas:fullscreen { width: 100vw; height: 100vh; }
 [hidden] { display: none !important; }
 #loading { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at 75% 15%, #2c4544, #10232a 75%); overflow: auto; }
 .loading-card { width: min(460px, 90vw); padding: 30px 20px; }
-.eyebrow { color: #a5ebc5; font-size: 10px; letter-spacing: .13em; margin: 0 0 30px; }
+.eyebrow { color: #a5ebc5; font-size: 11px; letter-spacing: .13em; margin: 0 0 30px; }
+/* Знак студии по канону: сторона 8, зазор 3, наклон −7°, четвёртый квадрат на 35 %. */
+.brand { display: flex; align-items: center; gap: 11px; margin: 0 0 14px;
+  font-size: 17px; font-weight: 800; letter-spacing: .06em; color: #e8f0e6; }
+.brand-light { font-weight: 400; color: #afc4b9; margin-left: .35em; }
+.brand-symbol { display: grid; grid-template-columns: 8px 8px; grid-template-rows: 8px 8px; gap: 3px; transform: rotate(-7deg); }
+.brand-symbol i { background: #a5ebc5; border-radius: 1.5px; box-shadow: 0 0 9px #a5ebc540; }
+.brand-symbol i:last-child { opacity: .35; box-shadow: none; }
+/* Поперёк экрана видно оба борта — портрет об этом просто предупреждает. */
+#rotate { position: absolute; inset: 0; z-index: 3; display: grid; place-items: center;
+  text-align: center; padding: 24px; background: #101d23f2; }
+#rotate h2 { font-size: 22px; margin: 18px 0 10px; letter-spacing: -.01em; }
+#rotate p { margin: 0; color: #a9bdb4; font-size: 14px; line-height: 1.5; }
+#rotate button { margin-top: 24px; font-size: 15px; padding: 11px 20px; }
+.rotate-mark { display: grid; place-items: center; margin: 0; }
+.rotate-mark i { display: block; width: 46px; height: 74px; border: 3px solid #a5ebc5;
+  border-radius: 7px; transform: rotate(-22deg); }
 h1 { font-size: clamp(38px, 6vw, 66px); line-height: .97; letter-spacing: -.055em; text-transform: uppercase; margin: 30px 0 22px; }
 .rail-mark { width: 104px; height: 61px; border: 1px solid #6b8d83; display: grid; place-items: center; position: relative; background: #385650; }
 .rail-mark i { position: absolute; width: 4px; height: 72px; background: #a5ebc5; top: -6px; }
@@ -21,6 +41,9 @@ progress::-webkit-progress-value { background: #a5ebc5; }
 progress::-moz-progress-bar { background: #a5ebc5; }
 #load-status { font-size: 12px; color: #a5ebc5; line-height: 1.5; overflow-wrap: anywhere; }
 .loading-hint { margin-top: 40px; font-size: 12px; color: #8daba1; }
+.touch-tip { display: none; color: #a5ebc5; }
+body.touch .desktop-tip { display: none; }
+body.touch .touch-tip { display: inline; }
 footer { flex: 0 0 42px; display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 0 18px; font-size: 11px; border-top: 1px solid #304b4b; background: #10232a; color: #97afa5; }
 footer b { margin-left: 7px; color: #a5ebc5; }
 button { font: inherit; color: #d8eedc; background: #2c4544; border: 1px solid #567269; padding: 7px 12px; border-radius: 3px; cursor: pointer; }
@@ -30,4 +53,7 @@ button:disabled { opacity: .45; cursor: default; }
 #retry { margin-top: 15px; background: #a5ebc5; color: #142a30; font-size: 15px; }
 noscript { position: fixed; inset: 25% 15%; z-index: 2; background: #142a30; padding: 40px; }
 @media (max-width: 850px) { .desktop-tip { display: none; } footer { padding: 0 10px; } }
+/* Телефон поперёк: каждая строка интерфейса отнимает у поля боя высоту, поэтому
+   подвал сжимается до полоски с кнопкой полного экрана. */
+@media (max-height: 520px) { footer { flex-basis: 34px; font-size: 10px; } footer button { padding: 5px 9px; } }
 @media (max-height: 540px) { .loading-card { padding: 20px; } .rail-mark, .loading-hint { display: none; } h1 { font-size: 36px; margin: 16px 0; } .eyebrow { margin-bottom: 16px; } }
