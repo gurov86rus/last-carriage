@@ -5,7 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#142a30">
   <meta name="mobile-web-app-capable" content="yes">
+  <!-- Ключ к полному экрану на iPhone. Safari на телефоне не даёт Fullscreen API
+       никому, кроме видео: кнопка «во весь экран» там не может работать в
+       принципе. Единственный путь — запуск с экрана «Домой», и включает его
+       именно этот мета-тег вместе с манифестом. -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Последний вагон">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <title>Последний вагон — 3D-прототип</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
@@ -34,6 +42,7 @@
     <span>Браузерный тест <b>3D</b></span>
     <span class="desktop-tip">Мышь — прицел · ЛКМ — огонь · C — камера · Esc — пауза</span>
     <span class="touch-tip">Во весь экран — так удобнее</span>
+    <span class="home-tip" id="home-hint" hidden>Поделиться <b>↑</b> → «На экран «Домой»» — и полосы Safari исчезнут</span>
     <nav aria-label="Управление окном">
       <button id="fullscreen" disabled>На весь экран ↗</button>
     </nav>
@@ -49,6 +58,25 @@
     const coarse = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || navigator.maxTouchPoints > 0;
     document.body.classList.toggle('touch', coarse);
     if (coarse) fullscreen.textContent = 'Во весь экран ↗';
+
+    // iPhone и iPad: Fullscreen API там недоступен ничему, кроме <video>, и
+    // кнопка «во весь экран» обманывала бы. Зато запуск с экрана «Домой» даёт
+    // ровно то, что нужно, — игру без полос браузера и с заблокированной
+    // ориентацией. Поэтому на iOS кнопка меняется на подсказку, как это сделать.
+    const apple = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const standalone = window.navigator.standalone === true
+      || window.matchMedia('(display-mode: standalone)').matches;
+    document.body.classList.toggle('standalone', standalone);
+    const homeHint = document.getElementById('home-hint');
+    if (standalone) {
+      // Уже запущено с «Домой»: полосы браузера позади, подсказка не нужна.
+      fullscreen.hidden = true;
+      if (homeHint) homeHint.hidden = true;
+    } else if (apple) {
+      fullscreen.hidden = true;
+      if (homeHint) homeHint.hidden = false;
+    }
     let instance = null;
     let failed = false;
     function showError(message) {
@@ -83,7 +111,23 @@
       companyName: 'Minty Pixel',
       productName: 'Last Carriage 3D',
       productVersion: '0.1.0',
-      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.5),
+      // Плотность считается от **бюджета пикселей**, а не зажимается сверху.
+      //
+      // Прежний потолок 1,5 одинаково применялся к телефону и к монитору, но
+      // площади у них несравнимы: поперечный телефон даёт 844 × 390 CSS, то
+      // есть при 1,5 около 0,7 миллиона точек, а развёрнутое окно на большом
+      // мониторе — 2560 × 1400, то есть восемь миллионов. Одиннадцатикратная
+      // разница в заливке при одном и том же «потолке 1,5».
+      //
+      // Бюджет в 2,6 миллиона точек оставляет телефон нетронутым (ему до
+      // потолка далеко) и опускает плотность только там, где окно действительно
+      // большое. Для плоской заливки без текстур это почти не видно.
+      devicePixelRatio: (() => {
+        const dense = window.devicePixelRatio || 1;
+        const area = Math.max(1, window.innerWidth * window.innerHeight);
+        const budget = 2.6e6;
+        return Math.max(0.75, Math.min(dense, 1.5, Math.sqrt(budget / area)));
+      })(),
       showBanner: (message, type) => {
         if (type === 'error') showError(message);
         else console.info(message);
