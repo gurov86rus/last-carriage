@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <title>Последний вагон — 3D-прототип</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260917.1328">
 </head>
 <body>
   <main id="player">
@@ -102,15 +102,18 @@
       instance.SetFullscreen(1);
       canvas.focus();
     });
+    // Метка версии на каждом адресе: приложение с экрана «Домой» иначе
+    // держится за свой кэш вечно — кнопки «обновить» в нём нет.
+    const stamp = '?v=20260917.1328';
     const buildUrl = 'Build';
     const config = {
-      dataUrl: buildUrl + '/WebGL.data.unityweb',
-      frameworkUrl: buildUrl + '/WebGL.framework.js.unityweb',
-      codeUrl: buildUrl + '/WebGL.wasm.unityweb',
+      dataUrl: buildUrl + '/WebGL.data.unityweb' + stamp,
+      frameworkUrl: buildUrl + '/WebGL.framework.js.unityweb' + stamp,
+      codeUrl: buildUrl + '/WebGL.wasm.unityweb' + stamp,
       streamingAssetsUrl: 'StreamingAssets',
       companyName: 'Minty Pixel',
       productName: 'Last Carriage 3D',
-      productVersion: '0.1.0',
+      productVersion: '20260917.1328',
       // Плотность считается от **бюджета пикселей**, а не зажимается сверху.
       //
       // Прежний потолок 1,5 одинаково применялся к телефону и к монитору, но
@@ -137,7 +140,7 @@
       showError('Открой Play-Web.command в папке проекта: браузерной игре нужен локальный сервер.');
     } else {
       const script = document.createElement('script');
-      script.src = buildUrl + '/WebGL.loader.js';
+      script.src = buildUrl + '/WebGL.loader.js' + stamp;
       script.onerror = () => showError('Файл загрузчика не найден. Проверь, что папка Build находится рядом с index.html.');
       script.onload = () => {
         createUnityInstance(canvas, config, value => {
