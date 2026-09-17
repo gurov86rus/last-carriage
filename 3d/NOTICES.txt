@@ -92,3 +92,16 @@ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
 DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
+
+
+COMBAT AUDIO TRIAL
+
+Source samples by Kenney (https://kenney.nl), licensed CC0 1.0:
+- Impact Sounds: https://kenney.nl/assets/impact-sounds
+- Sci-fi Sounds: https://kenney.nl/assets/sci-fi-sounds
+License: https://creativecommons.org/publicdomain/zero/1.0/
+
+Modified for Last Carriage: mono downmix, pitch, layering with synthesized
+low end, spectral shaping into per-bank registers, envelopes and loudness
+matching. The full process is Tools/make-combat-audio.py.
+Original license notices and selected source files: Tools/AudioSources.
