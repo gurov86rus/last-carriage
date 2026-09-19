@@ -7,10 +7,15 @@ html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-
 @supports (height: 100dvh) { html, body { height: 100dvh; } }
 body { -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 body { display: flex; flex-direction: column; }
-/* Вырез и «подбородок» телефона: холст живёт внутри безопасной зоны, поэтому
-   ни прицел, ни кнопки не уезжают под чёлку. */
-#player { min-height: 0; flex: 1; position: relative; background: #142a30;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+/* Вырез и «подбородок» телефона холст **не** обходит: он занимает экран
+   целиком, а внутрь безопасной зоны убирается один интерфейс — игра получает
+   эти поля от страницы числами и отступает сама (`DeviceFeel.SafeArea`).
+
+   Прежний отступ здесь стоил на айфоне поперёк сорок семь точек слева, сорок
+   семь справа и двадцать снизу: одиннадцать процентов ширины уходило под
+   пустые полосы цвета фона, и «во весь экран» весь экран не занимало. Под
+   вырезом лежит пейзаж, и терять его не за что. */
+#player { min-height: 0; flex: 1; position: relative; background: #142a30; }
 canvas { width: 100%; height: 100%; display: block; outline: none; touch-action: none; }
 canvas:fullscreen { width: 100vw; height: 100vh; }
 [hidden] { display: none !important; }
