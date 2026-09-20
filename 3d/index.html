@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <title>Последний вагон — 3D-прототип</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=20260920.1838">
+  <link rel="stylesheet" href="style.css?v=20260920.1857">
 </head>
 <body>
   <main id="player">
@@ -109,13 +109,13 @@
     // «table index is out of bounds». Хэш в имени это исключает.
     const buildUrl = 'Build';
     const config = {
-      dataUrl: buildUrl + '/43a98cea057e0c7a78201114638e3ae8.data.unityweb',
-      frameworkUrl: buildUrl + '/215731e99d369958532a230ea0c87653.framework.js.unityweb',
-      codeUrl: buildUrl + '/58bfeabff8c02abd4badf1b14eeb1966.wasm.unityweb',
+      dataUrl: buildUrl + '/6840893ca557266cf41b472ce20dade3.data.unityweb',
+      frameworkUrl: buildUrl + '/afa69521fa3cea49a242aa489b0d15e9.framework.js.unityweb',
+      codeUrl: buildUrl + '/5d1f9ea85ac1cda5cba1cad8afb009be.wasm.unityweb',
       streamingAssetsUrl: 'StreamingAssets',
       companyName: 'Minty Pixel',
       productName: 'Last Carriage 3D',
-      productVersion: '20260920.1838',
+      productVersion: '20260920.1857',
       // Плотность считается от **бюджета пикселей**, а не зажимается сверху.
       //
       // Прежний потолок 1,5 одинаково применялся к телефону и к монитору, но
@@ -168,7 +168,7 @@
         // сравнения свежий посетитель делал бы один бессмысленный переход на
         // каждой выкладке. Версия — это дата и время постоянной ширины, поэтому
         // сравнение строк здесь и есть сравнение по времени.
-        if (!latest || latest <= '20260920.1838') return false;
+        if (!latest || latest <= '20260920.1857') return false;
         const where = new URL(location.href);
         if (where.searchParams.get('v') === latest) return false;
         where.searchParams.set('v', latest);
@@ -189,7 +189,7 @@
       ]);
       if (asked) return;
       const script = document.createElement('script');
-      script.src = buildUrl + '/15b682b34fbcb34a795d9f44712b705e.loader.js';
+      script.src = buildUrl + '/f5cffd621cfa9b6fc35e61d6a1b86060.loader.js';
       script.onerror = () => showError('Файл загрузчика не найден. Проверь, что папка Build находится рядом с index.html.');
       script.onload = () => {
         createUnityInstance(canvas, config, value => {
