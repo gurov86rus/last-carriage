@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <title>Последний вагон — 3D-прототип</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=20260920.0948">
+  <link rel="stylesheet" href="style.css?v=20260920.1020">
 </head>
 <body>
   <main id="player">
@@ -109,13 +109,13 @@
     // «table index is out of bounds». Хэш в имени это исключает.
     const buildUrl = 'Build';
     const config = {
-      dataUrl: buildUrl + '/7246c31d45fe1a2d2485217cd97dc052.data.unityweb',
-      frameworkUrl: buildUrl + '/0307aa337bdb791086fd12fc29f878a2.framework.js.unityweb',
-      codeUrl: buildUrl + '/7e495c42796ba36b8a9bf5a2b2fb9ea7.wasm.unityweb',
+      dataUrl: buildUrl + '/e82c836132c486c6e826e897146f791c.data.unityweb',
+      frameworkUrl: buildUrl + '/905c6d35fedcdc62656c1ee8a6f82a5d.framework.js.unityweb',
+      codeUrl: buildUrl + '/e6c666dd1d784bd826ca95733bdcc45a.wasm.unityweb',
       streamingAssetsUrl: 'StreamingAssets',
       companyName: 'Minty Pixel',
       productName: 'Last Carriage 3D',
-      productVersion: '20260920.0948',
+      productVersion: '20260920.1020',
       // Плотность считается от **бюджета пикселей**, а не зажимается сверху.
       //
       // Прежний потолок 1,5 одинаково применялся к телефону и к монитору, но
@@ -142,7 +142,7 @@
       showError('Открой Play-Web.command в папке проекта: браузерной игре нужен локальный сервер.');
     } else {
       const script = document.createElement('script');
-      script.src = buildUrl + '/60e2708ccb2efb87629c5b701af7f2aa.loader.js';
+      script.src = buildUrl + '/39632838d1b793be47c287bd83ed0921.loader.js';
       script.onerror = () => showError('Файл загрузчика не найден. Проверь, что папка Build находится рядом с index.html.');
       script.onload = () => {
         createUnityInstance(canvas, config, value => {
