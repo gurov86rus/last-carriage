@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <title>Последний вагон — 3D-прототип</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=20260920.1020">
+  <link rel="stylesheet" href="style.css?v=20260920.1023">
 </head>
 <body>
   <main id="player">
@@ -109,13 +109,13 @@
     // «table index is out of bounds». Хэш в имени это исключает.
     const buildUrl = 'Build';
     const config = {
-      dataUrl: buildUrl + '/e82c836132c486c6e826e897146f791c.data.unityweb',
+      dataUrl: buildUrl + '/d0a240591b18e3ef6d86ddc344dc53f9.data.unityweb',
       frameworkUrl: buildUrl + '/905c6d35fedcdc62656c1ee8a6f82a5d.framework.js.unityweb',
       codeUrl: buildUrl + '/e6c666dd1d784bd826ca95733bdcc45a.wasm.unityweb',
       streamingAssetsUrl: 'StreamingAssets',
       companyName: 'Minty Pixel',
       productName: 'Last Carriage 3D',
-      productVersion: '20260920.1020',
+      productVersion: '20260920.1023',
       // Плотность считается от **бюджета пикселей**, а не зажимается сверху.
       //
       // Прежний потолок 1,5 одинаково применялся к телефону и к монитору, но
@@ -138,9 +138,51 @@
         else console.info(message);
       }
     };
+    // <summary>
+    // Приложение с экрана «Домой» держится за свой `index.html` и сам его не
+    // перепроверяет: сервер просит max-age=600, но запущенное с «Домой» окно
+    // этим не связано. Игрок закрывает приложение, открывает заново — и видит
+    // ту сборку, которую добавил.
+    //
+    // Раньше это скрывалось: старая страница просила файлы по постоянным именам
+    // и получала свежие байты, то есть новую игру под старой страницей. Оно же
+    // и ломало сборку («table index is out of bounds»). С именами по хэшу
+    // старая страница честно получает свою старую игру — и стало видно, что
+    // страница была старой всё это время.
+    //
+    // Лечится тем, что страница спрашивает о себе сама. Рядом лежит
+    // `version.json` в четыре десятка байт; его читают мимо кэша, и если там
+    // другая версия — уходят на **другой адрес**, `?v=<версия>`. Другого адреса
+    // в кэше нет по определению, значит документ придёт с сервера.
+    //
+    // Метка в адресе же и защищает от круга: придя на `?v=X`, страница уже
+    // несёт X и второй раз никуда не пойдёт.
+    // </summary>
+    const freshen = async () => {
+      try {
+        const answer = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
+        if (!answer.ok) return false;
+        const latest = (await answer.json()).version;
+        if (!latest || latest === '20260920.1023') return false;
+        const where = new URL(location.href);
+        if (where.searchParams.get('v') === latest) return false;
+        where.searchParams.set('v', latest);
+        location.replace(where.toString());
+        return true;
+      } catch (error) { return false; }
+    };
+
+    (async () => {
     if (location.protocol === 'file:') {
       showError('Открой Play-Web.command в папке проекта: браузерной игре нужен локальный сервер.');
     } else {
+      // Спрашиваем до запуска движка, но ждём не дольше полутора секунд: на
+      // медленной сети игра важнее свежести, а следующий запуск спросит снова.
+      const asked = await Promise.race([
+        freshen(),
+        new Promise(done => setTimeout(() => done(false), 1500)),
+      ]);
+      if (asked) return;
       const script = document.createElement('script');
       script.src = buildUrl + '/39632838d1b793be47c287bd83ed0921.loader.js';
       script.onerror = () => showError('Файл загрузчика не найден. Проверь, что папка Build находится рядом с index.html.');
@@ -159,6 +201,7 @@
       };
       document.body.appendChild(script);
     }
+    })();
   </script>
 </body>
 </html>
