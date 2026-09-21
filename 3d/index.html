@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <title>Последний вагон — 3D-прототип</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=20260921.0622">
+  <link rel="stylesheet" href="style.css?v=20260921.0643">
 </head>
 <body>
   <main id="player">
@@ -109,13 +109,13 @@
     // «table index is out of bounds». Хэш в имени это исключает.
     const buildUrl = 'Build';
     const config = {
-      dataUrl: buildUrl + '/64c9a55587e2e200d11808b1355fff7d.data.unityweb',
+      dataUrl: buildUrl + '/5a99006e3be68bb89109a0fdffd7450b.data.unityweb',
       frameworkUrl: buildUrl + '/afa69521fa3cea49a242aa489b0d15e9.framework.js.unityweb',
-      codeUrl: buildUrl + '/615f6b2a587c7a9f289e25300ca9a4e1.wasm.unityweb',
+      codeUrl: buildUrl + '/d7b2febfc968046526a2e67eff61c46b.wasm.unityweb',
       streamingAssetsUrl: 'StreamingAssets',
       companyName: 'Minty Pixel',
       productName: 'Last Carriage 3D',
-      productVersion: '20260921.0622',
+      productVersion: '20260921.0643',
       // Плотность считается от **бюджета пикселей**, а не зажимается сверху.
       //
       // Прежний потолок 1,5 одинаково применялся к телефону и к монитору, но
@@ -168,7 +168,7 @@
         // сравнения свежий посетитель делал бы один бессмысленный переход на
         // каждой выкладке. Версия — это дата и время постоянной ширины, поэтому
         // сравнение строк здесь и есть сравнение по времени.
-        if (!latest || latest <= '20260921.0622') return false;
+        if (!latest || latest <= '20260921.0643') return false;
         const where = new URL(location.href);
         if (where.searchParams.get('v') === latest) return false;
         where.searchParams.set('v', latest);
@@ -189,7 +189,7 @@
       ]);
       if (asked) return;
       const script = document.createElement('script');
-      script.src = buildUrl + '/d155fe7e30ad53c6727bbd225335312b.loader.js';
+      script.src = buildUrl + '/c235d9fe6de0271dc37ad8f07cc9e2db.loader.js';
       script.onerror = () => showError('Файл загрузчика не найден. Проверь, что папка Build находится рядом с index.html.');
       script.onload = () => {
         createUnityInstance(canvas, config, value => {
